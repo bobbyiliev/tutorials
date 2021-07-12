@@ -43,4 +43,4 @@ All that you need to do in order to have this configured on your DevDojo DevBlog
 
 For more information about the DevDojo DevBlog, make sure to visit this page here:
 
-[DevDojo DevBlog](http://devdojo.bobbyiliev.com/devblog?ref=bobbyiliev)
+[DevDojo DevBlog](http://devdojo.com/devblog?ref=bobbyiliev)
