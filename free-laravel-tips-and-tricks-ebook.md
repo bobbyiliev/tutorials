@@ -177,3 +177,5 @@ If you are contributing 🍿 please read the [contributing file](https://github.
 Any suggestions for future topics would be appriciated
 
 To support me, make sure to follow me on Twitter at [@bobbyiliev_](https://twitter.com/bobbyiliev_)
+
+Source: [💡 Free Laravel Tips and Tricks eBook](https://devdojo.com/bobbyiliev/free-laravel-tips-and-tricks-ebook)
