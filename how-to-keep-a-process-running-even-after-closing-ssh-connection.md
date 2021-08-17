@@ -79,3 +79,5 @@ This is just a really brief introduction on how to use `screen`, I would recomme
 https://www.gnu.org/software/screen/manual/screen.html
 
 Hope that this helps!
+
+Source: [How to keep a process running even after closing SSH connection?](https://devdojo.com/bobbyiliev/how-to-keep-a-process-running-even-after-closing-ssh-connection)
