@@ -171,3 +171,5 @@ The first 5 people to message me on Twitter would get a Releem free license:
 [@bobbyiliev_](https://twitter.com)
 
 I hope that this helps and if you have any questions make sure to put them in the comments below.
+
+Source: [How to optimize MySQL to speed up your Laravel application with Releem?](https://devdojo.com/bobbyiliev/how-to-optimize-mysql-to-speed-up-your-laravel-application-with-releem)
