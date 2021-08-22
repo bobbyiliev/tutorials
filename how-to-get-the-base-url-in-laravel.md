@@ -124,3 +124,5 @@ If you are just getting started with Laravel, make sure to check out this introd
 If you want to learn more about PHP in general, make sure to check out this [free PHP basics course here](https://devdojo.com/course/php-basics).
 
 {% buymeacoffee bobbyiliev %}
+
+Source: [How to Get the Base URL in Laravel?](https://devdojo.com/bobbyiliev/how-to-get-the-base-url-in-laravel)
