@@ -111,3 +111,5 @@ If you are just getting started with Laravel, make sure to check out this introd
 If you want to learn more about PHP in general, make sure to check out this [free PHP basics course here](https://devdojo.com/course/php-basics).
 
 {% buymeacoffee bobbyiliev %}
+
+Source: [How to Order the Results of all() in Laravel Eloquent?](https://devdojo.com/bobbyiliev/how-to-order-the-results-of-all-in-laravel-eloquent)
