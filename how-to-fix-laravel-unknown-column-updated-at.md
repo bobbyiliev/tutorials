@@ -84,3 +84,5 @@ If you are just getting started with Laravel, make sure to check out this introd
 If you want to learn more about SQL in general make sure to check out this [free introduction to SQL eBook here](https://github.com/bobbyiliev/introduction-to-sql).
 
 {% buymeacoffee bobbyiliev %}
+
+Source: [How to fix Laravel Unknown Column 'updated_at'?](https://devdojo.com/bobbyiliev/how-to-fix-laravel-unknown-column-updated-at)
