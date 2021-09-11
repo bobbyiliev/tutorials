@@ -50,3 +50,5 @@ killall -STOP -u someuser
 # Conclusion
 
 For more information about the history of the fork bomb and other examples I would recommend checking this [Wikipedia page](https://en.wikipedia.org/wiki/Fork_bomb).
+
+Source: [What is a Fork Bomb in Linux and how to stop it?](https://devdojo.com/bobbyiliev/what-is-a-fork-bomb-in-linux-and-how-to-stop-it)
