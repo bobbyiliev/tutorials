@@ -3,7 +3,7 @@
 title: 17 Special Characters in the Shell That You Should Know
 tags: shell,bash,linux,devops
 image: https://cdn.devdojo.com/posts/images/May2021/17-special-characters-in-the-shell-that-you-should-know.jpg
-status: draft
+status: published
 
 ---
 
