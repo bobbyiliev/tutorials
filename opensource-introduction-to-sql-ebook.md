@@ -104,3 +104,5 @@ If you ever need to create a graphic, poster, invitation, logo, presentation –
 ## 🤲 Contributing
 
 All contributions 🍿 are more than welcome!
+
+Source: [Opensource Introduction to SQL eBook](https://devdojo.com/bobbyiliev/opensource-introduction-to-sql-ebook)
