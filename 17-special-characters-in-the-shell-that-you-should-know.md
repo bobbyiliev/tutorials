@@ -2,7 +2,7 @@
 
 title: 17 Special Characters in the Shell That You Should Know
 tags: shell,bash,linux,devops
-image: https://cdn.devdojo.com/posts/images/May2021/17-special-characters-in-the-shell-that-you-should-know.jpg?auto=format&q=70&w=1280
+image: https://cdn.devdojo.com/posts/images/May2021/17-special-characters-in-the-shell-that-you-should-know.jpg
 status: draft
 
 ---
@@ -246,3 +246,5 @@ mysql my_database < my_backup.sql
 Once you know a good number of those you could then start using them together and do lots of cool scripts!
 
 I hope that this helps!
+
+Source: [Initial 17 Special Characters in the Shell That You Should Know](https://devdojo.com/bobbyiliev/17-special-characters-in-the-shell-that-you-should-know)
