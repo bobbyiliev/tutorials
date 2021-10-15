@@ -237,7 +237,7 @@ SELECT url, SUM(count) as total FROM aggregated_logs GROUP BY 1 ORDER BY 2 DESC;
 
 Again if we were to use the `watch` command we could see the numbers change instantly as soon as we get new data in the log as Materialize processes each line of the log through the dataflow, and keeps listening for new lines:
 
-![](https://imgur.com/niwnCOa.png)
+![](https://user-images.githubusercontent.com/21223421/137508076-8df2867c-c4e1-45fa-9a3c-97e33a94c7eb.png)
 
 Feel free to experiment with more complex queries and analyze your nginx access log for suspicious activity using pure SQL and have the results with real-time data!
 
