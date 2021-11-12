@@ -9,7 +9,7 @@ status: draft
 
 # Introduction 
 
-In this tutorial, I will show you how [Materialize](https://materialize.com) works by using it to run streaming SQL on nginx logs. By the end of the tutorial, you will have a better idea of what Materialize is, how it's different than other SQL engines, and how to use it.
+In this tutorial, I will show you how [Materialize](https://materialize.com) works by using it to run SQL queries on continuously produced nginx logs. By the end of the tutorial, you will have a better idea of what Materialize is, how it's different than other SQL engines, and how to use it.
 
 # Prerequisites
 
@@ -25,14 +25,14 @@ I'll be using DigitalOcean. If you are new to DigitalOcean, you could use my ref
 
 Materialize is a streaming database for real-time analytics. 
 
-It is not a substitution for your transaction database, instead it accepts input data from a variety of sources like:
+It is not a substitution for your transactional database, instead it accepts input data from a variety of sources like:
 
  * Messages from streaming sources like Kafka
  * Archived data from object stores like S3
  * Change feeds from databases like PostgreSQL
- * Date in Files: CSV, JSON and even unstructured files like logs _(what we'll be using today.)_
+ * Data in Files: CSV, JSON and even unstructured files like logs _(what we'll be using today.)_
 
-And it lets you write standard SQL queries _(called materialized views)_ that are kept up-to-date instead of returning a static set of results from one point in time.
+And it maintains the answers to your SQL queries over time, keeping them up-to-date as new data flows in (using _materialized views_), instead of running them against a static snapshot at a point in time.
 
 ![Materialize Landing Page](https://imgur.com/MU5IHOV.png)
 
@@ -42,9 +42,7 @@ If you want to learn more about Materialize, make sure to check out their offici
 
 # Installing Materialize
 
-Since we're running on Linux, we'll just install Materialize directly. There are other ways that you could use in order to run Materialize as described [here](https://materialize.com/docs/install/). For a production-ready Materialize instance, I would recommend giving [Materialize Cloud](https://materialize.com/product) a try!
-
-Materialize runs as a single binary called `materialized` _(d for daemon, following Unix conventions.)_ To install it, run the following command:
+Materialize runs as a single binary called `materialized` _(d for daemon, following Unix conventions)_. Since we're running on Linux, we'll just install Materialize directly. To install it, run the following command:
 
 ```
 sudo apt install materialized
@@ -56,13 +54,15 @@ Once it's installed, start Materialize (with sudo so it has access to nginx logs
 sudo materialized
 ```
 
-Now that we have the `materialized` running, we need to open a new terminal to install and run a CLI tool that we use to interact with our Materialize instance!
+Now that we have the `materialized` running, we need to open a new terminal to install and run a CLI tool that we use to interact with our Materialize instance! 
+
+There are other ways that you could use in order to run Materialize as described [here](https://materialize.com/docs/install/). For a production-ready Materialize instance, I would recommend giving [Materialize Cloud](https://materialize.com/product) a try!
 
 # Installing `mzcli`
 
-The [`mzcli` tool](https://github.com/MaterializeInc/mzcli#quick-start) lets us connect to Materialize similar to how we use `psql` to connect to PostgreSQL.
+The [`mzcli` tool](https://github.com/MaterializeInc/mzcli#quick-start) lets us connect to Materialize similar to how we would use a SQL client to connect to any other database.
 
-Speaking of `psql`, Materialize is fully compatible with `psql` so if you have `psql` already installed you could use it instead of `mzcli`, but with `mzcli` you  get nice syntax highlighting and autosuggest when writing your queries.
+Materialize is wire-compatible with PostgreSQL, so if you have `psql` already installed you could use it instead of `mzcli`, but with `mzcli` you get nice syntax highlighting and autocomplete when writing your queries.
 
 To learn the main differences between the two, make sure to check out the official documentation here: [Materialize CLI Connections](https://materialize.com/docs/connect/cli/)
 
@@ -96,7 +96,7 @@ If you don't already have nginx installed, install it with the following command
 sudo apt install nginx
 ```
 
-Next, let's populate the access log with some entries with this simple Bash loop:
+Next, let's populate the access log with some entries with a Bash loop:
 
 ```
  for i in {1..200} ; do curl -s 'localhost/materialize'  > /dev/null ; echo $i ; done
@@ -104,11 +104,11 @@ Next, let's populate the access log with some entries with this simple Bash loop
 
 _If you have an actual nginx `access.log`, you can skip the step above._
 
-Now we'll have some entries in the `/var/log/nginx/access.log` access log file that we would be able to able to load into Materialize.
+Now we'll have some entries in the `/var/log/nginx/access.log` access log file that we would be able to able to feed into Materialize.
 
 ## Adding a Materialize source
 
-By creating a Source you are essentially telling Materialize to connect to some data source. As described in the introduction, you could add a wide variety of sources to Materialize. 
+By creating a Source you are essentially telling Materialize to connect to some external data source. As described in the introduction, you could connect a wide variety of sources to Materialize. 
 
 For the full list of source types make sure to check out the official documentation here:
 
@@ -122,7 +122,7 @@ First, access the Materialize instance with the `mzcli` command:
 mzcli -U materialize -h localhost -p 6875 materialize
 ```
 
-Then run the following query to create the source:
+Then run the following statement to create the source:
 
 ```
 CREATE SOURCE nginx_log 
@@ -131,10 +131,10 @@ WITH (tail = true)
 FORMAT REGEX '(?P<ipaddress>[^ ]+) - - \[(?P<time>[^\]]+)\] "(?P<request>[^ ]+) (?P<url>[^ ]+)[^"]+" (?P<statuscode>\d{3})';
 ```
 
-A quick rundown of the query:
+A quick rundown:
 
- * `CREATE SOURCE`: First we specify the name of our source
- * `FROM FILE`: Then we specify that we want to create a source from a local file and we provide the path to that file
+ * `CREATE SOURCE`: First we specify that we want to create a source
+ * `FROM FILE`: Then we specify that this source will read from a local file, and we provide the path to that file
  * `WITH (tail = true)`: Continually check the file for new content
  * `FORMAT REGEX`: as this is an unstructured file we need to specify regex as the format so that we could get only the specific parts of the log that we need. 
 
@@ -154,7 +154,7 @@ To make this a bit more clear, a standard entry in your nginx access log file wo
 * `(?P<url>[^ ]+)`: the relative URL, eg. `/favicon.ico`
 * `(?P<statuscode>\d{3})`: the three digit HTTP status code.
 
-Once you execute the create source query, you can confirm the source was created succesfully by running the following query:
+Once you execute the create source statement, you can confirm the source was created succesfully by running the following:
 
 ```
 mz> SHOW SOURCES;
@@ -174,7 +174,7 @@ Now that we have our source in place, let's go ahead and create a view!
 
 You may be familiar with [Materialized Views](https://en.wikipedia.org/wiki/Materialized_view) from the world of traditional databases like PostgreSQL, which are essentially cached queries. The unique feature here is the materialized view we are about to create is **automatically kept up-to-date**.
 
-In order to create a view, we will use the following command:
+In order to create a materialized view, we will use the following statement:
 
 ```
 CREATE MATERIALIZED VIEW aggregated_logs AS
@@ -189,19 +189,21 @@ CREATE MATERIALIZED VIEW aggregated_logs AS
 
 The important things to note are:
 
-* The moment you execute the statement, **Materialize creates a dataflow** to match the SQL 
-* Then Materialize processes each line of the log through the dataflow, and keeps listening for new lines. This is incredibly powerful for dashboards that rely on real-time data.
+* Materialize will keep the results of the embedded query in memory, so you'll always get a fast and up-to-date answer
+* The results are incrementally updated as new log events arrive 
+
+Under the hood, **Materialize compiles your SQL query into a dataflow** and then takes care of all the heavy lifting for you. This is incredibly powerful, as it allows you to process data in real-time using _just_ SQL.
 
 A quick rundown of the statement itself:
 
-*  First we start with the `CREATE MATERIALIZED VIEW aggregated_logs` which identifies that we want to create a new Materialized view. The `aggregated_logs` part is the name of our Materialized view.
-* Then we specify the `SELECT` statement used to build the output. In this case we are aggregating by `ipaddress`, `request`, `url` and `statuscode`, and we are counting the total instances of each combo with a `COUNT(*)`
+* First we start with the `CREATE MATERIALIZED VIEW aggregated_logs` which identifies that we want to create a new Materialized view named `aggregated_logs`.
+* Then we specify the `SELECT` statement that we are interested in keeping track of over time. In this case we are aggregating the data in our log file by `ipaddress`, `request`, `url` and `statuscode`, and we are counting the total instances of each combo with a `COUNT(*)`
  
-When creating a Materialized View, it could be based on multiple sources like your Kafka Stream, a raw data file that you have on an S3 bucket, and your PostgreSQL database. This single view will give you the power to analyze your data in real-time.
+When creating a Materialized View, it could be based on multiple sources like a stream from Kafka, a raw data file that you have on an S3 bucket, or your PostgreSQL database. This single statement will give you the power to analyze your data in real-time.
 
-> We specified a simple `SELECT` that we want the view to be based on but this could include complex `JOIN`s, however for the sake of this tutorial we are keeping things simple.
+> We specified a simple `SELECT` that we want the view to be based on but this could include complex operations like `JOIN`s, however for the sake of this tutorial we are keeping things simple.
 
-For more information about the Materialized Views check out the official documentation here:
+For more information about Materialized Views check out the official documentation here:
 
 [Creating Materialized views](https://materialize.com/docs/sql/create-materialized-view/)
 
@@ -235,11 +237,11 @@ We could also write queries that do further aggregation and filtering on top of 
 SELECT url, SUM(count) as total FROM aggregated_logs GROUP BY 1 ORDER BY 2 DESC;
 ```
 
-Again if we were to use the `watch` command we could see the numbers change instantly as soon as we get new data in the log as Materialize processes each line of the log through the dataflow, and keeps listening for new lines:
+Again if we were to use the `watch` command (or just re-run the query over and over again), we could see the numbers change instantly as soon as we get new data in the log as Materialize processes each line of the log and keeps listening for new lines:
 
 ![](https://user-images.githubusercontent.com/21223421/137508076-8df2867c-c4e1-45fa-9a3c-97e33a94c7eb.png)
 
-Feel free to experiment with more complex queries and analyze your nginx access log for suspicious activity using pure SQL and have the results with real-time data!
+Feel free to experiment with more complex queries and analyze your nginx access log for suspicious activity using pure SQL and keep track of the results in real time!
 
 # Conclusion
 
