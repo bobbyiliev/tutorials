@@ -213,8 +213,8 @@ Now you could use this new view and interact with the data from the nginx log wi
 
 If we do a `SELECT` on this Materialized view, we get a nice aggregated summary of stats:
 
-```
-select * from aggregated_logs;
+```sql
+SELECT * FROM aggregated_logs;
 
    ipaddress    | request |           url            | statuscode | count
 ----------------+---------+--------------------------+------------+-------
@@ -223,23 +223,45 @@ select * from aggregated_logs;
 
 As more requests come in to the nginx server, the aggregated stats in the view are kept up-to-date.
 
-```
-watch -n1 "psql -c 'select * from aggregated_logs' -U materialize -h localhost -p 6875 materialize"
-```
-
-Output:
-
-![](https://imgur.com/tib10de.gif)
-
 We could also write queries that do further aggregation and filtering on top of the materialized view, for example, counting requests by route only:
 
 ```
 SELECT url, SUM(count) as total FROM aggregated_logs GROUP BY 1 ORDER BY 2 DESC;
 ```
 
-Again if we were to use the `watch` command (or just re-run the query over and over again), we could see the numbers change instantly as soon as we get new data in the log as Materialize processes each line of the log and keeps listening for new lines:
+If we were re-run the query over and over again, we could see the numbers change instantly as soon as we get new data in the log as Materialize processes each line of the log and keeps listening for new lines:
 
-![](https://user-images.githubusercontent.com/21223421/137508076-8df2867c-c4e1-45fa-9a3c-97e33a94c7eb.png)
+```
++--------------------------+-------+
+| url                      | total |
+|--------------------------+-------|
+| /materialize/demo-page-2 | 1255  |
+| /materialize/demo-page   | 1957  |
+| /materialize             | 400   |
++--------------------------+-------+
+```
+
+As another example, let's use `psql` together with `watch` to see this in action. If you don't have `psql` already isntalled you can install it with the following command:
+
+```
+sudo apt install postgresql-client
+```
+
+After that, let's run the `SELECT * FROM aggregated_logs` statement every second using the `watch` command: 
+
+```
+watch -n1 "psql -c 'select * from aggregated_logs' -U materialize -h localhost -p 6875 materialize"
+```
+
+In **another terminal window**, you could run another `for` loop to generate some new nginx logs and see how the results change:
+
+```
+for i in {1..2000} ; do curl -s 'localhost/materialize/demo-page-2' > /dev/null ; echo $i ; done
+```
+
+The output of the `watch` command would look like this:
+
+![Materialize nginx logs demo](https://user-images.githubusercontent.com/21223421/141499876-58fdf03e-fb68-4966-ad12-b3708d50bb91.gif)
 
 Feel free to experiment with more complex queries and analyze your nginx access log for suspicious activity using pure SQL and keep track of the results in real time!
 
